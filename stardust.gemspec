@@ -5,7 +5,7 @@ require "stardust/version"
 
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |spec|
-  spec.name        = "stardust"
+  spec.name        = "stardust_rails"
   spec.version     = Stardust::VERSION
   spec.authors     = ["Bradley Wittenbrook"]
   spec.email       = ["bradley.wittenbrook@gmail.com"]
