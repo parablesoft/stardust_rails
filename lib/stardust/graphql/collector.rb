@@ -3,27 +3,41 @@ module Stardust
     module Collector
       module_function
 
-      @@__types__ = {
+      FIXED_TYPES = {
         id: ::GraphQL::Types::ID,
         integer: Integer,
         float: Float,
         string: String,
         date: ::GraphQL::Types::ISO8601DateTime,
         boolean: ::GraphQL::Types::Boolean,
-      }
+      }.freeze
 
+
+      @@__types__ = {}.merge(FIXED_TYPES)
       @@__queries__ = {}
       @@__mutations__ = {}
+
+      @@__defined_types__ = []
 
       def add_type(type, block, object_klass)
         if type.in?(@@__types__.keys)
           raise "Type #{type.to_s} is alread defined."
         end
 
+        @@__defined_types__ << type.to_s.camelize
+
         klass = Class.new(object_klass, &block)
         klass.graphql_name(type.to_s.camelize)
         ::Stardust::GraphQL::Types.const_set("#{type.to_s.camelize}", klass)
-        @@__types__[type] = "Types::#{type.to_s.camelize}".constantize
+        @@__types__[type] = "Stardust::GraphQL::Types::#{type.to_s.camelize}".constantize
+      end
+
+      def self.clear_definitions!
+        @@__defined_types__.each do |type|
+          ::Stardust::GraphQL::Types.send(:remove_const, type)
+        end
+        @@__defined_types__ = []
+        @@__types__ = {}.merge(FIXED_TYPES)
       end
 
       def add_query(name, query:)
@@ -81,7 +95,7 @@ module Stardust
             field.instance_variable_set(:@resolver_class, query)
             field.instance_variable_set(:@resolver_method, :resolve)
 
-            field.extension(::Stardust::GraphQL::Extensions::Authorize)
+            field.extension(Extensions::Authorize)
           }
 
           query_class.send(:field,
@@ -105,8 +119,6 @@ module Stardust
           mutation_class.send(:field, name, mutation: mutation )
         end
         Schema.mutation(mutation_class)
-
-        Schema.use(::GraphQL::Batch)
       end
     end
   end
