@@ -18,7 +18,7 @@ $ bundle
 
 Or install it yourself as:
 ```bash
-$ gem install stardust
+$ gem install stardust_rails
 ```
 
 ## Contributing
