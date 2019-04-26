@@ -5,13 +5,13 @@ require "stardust/version"
 
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |spec|
-  spec.name        = "stardust_rails"
+  spec.name        = "stardust"
   spec.version     = Stardust::VERSION
   spec.authors     = ["Bradley Wittenbrook"]
   spec.email       = ["bradley.wittenbrook@gmail.com"]
-  spec.homepage    = "TODO"
-  spec.summary     = "TODO: Summary of Stardust."
-  spec.description = "TODO: Description of Stardust."
+  spec.homepage    = "https://github.com/hatch-software/stardust_rails"
+  spec.summary     = "GraphQL + Rails = Programmer Bliss"
+  spec.description = "Modernize API development in Rails"
   spec.license     = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
@@ -25,7 +25,11 @@ Gem::Specification.new do |spec|
 
   spec.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
 
-  spec.add_dependency "rails", "~> 5.2.2", ">= 5.2.2.1"
-
-  spec.add_development_dependency "sqlite3"
+  spec.add_dependency "rails", ">= 5.0"
+  spec.add_dependency "graphql", "~> 1.9.3"
+  spec.add_dependency "graphiql-rails", "~> 1.7.0"
+  spec.add_dependency "graphql-rails_logger", "~> 1.1.0"
+  spec.add_dependency "apollo_upload_server", "2.0.0.beta.1"
+  spec.add_dependency "graphql-batch", "~> 0.4.0"
+  
 end
