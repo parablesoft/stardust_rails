@@ -2,10 +2,6 @@ Stardust::GraphQL.define_mutation :<%= type_name %> do
 
   description "TODO: Write a detailed description"
 
-  ## Required
-  ## What is the return type of this query
-  ## type :my_type
-
   ## Can this query return nil
   null true
 
@@ -13,10 +9,6 @@ Stardust::GraphQL.define_mutation :<%= type_name %> do
   ##
   ## argument :id, :integer, required: true,
   ##               loads: ::MyModel, as: :model
-  ##
-  ## Use named params to have access to any arguments
-  ## def resolve(model:)
-
 
   ## Required
   ## What fields does this mutation return

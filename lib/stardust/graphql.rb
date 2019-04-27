@@ -12,9 +12,12 @@ require "stardust/graphql/types/dsl"
 module Stardust
   module GraphQL
     extend DSL
+
+    class MissingType < StandardError; end
   end
 end
 
 require "stardust/graphql/field"
 require "stardust/graphql/object"
 require "stardust/graphql/collector"
+require "stardust/graphql/input_object"

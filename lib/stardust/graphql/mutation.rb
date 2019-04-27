@@ -5,13 +5,22 @@ module Stardust
       def self.argument(name, type, description = nil, loads: nil, **kwargs)
         @__types_to_lookup__ ||= []
         @__types_to_lookup__ << lambda { |klass|
-          actual_type = Collector.lookup_type(type)
+          begin
+            actual_type = Collector.lookup_type(type)
 
-          kwargs[:prepare] = ->(obj, _ctx) { loads.find(obj) } if loads
+            kwargs[:prepare] = ->(obj, _ctx) { loads.find(obj) } if loads
 
-          klass.method(:argument)
-               .super_method
-               .call(name, actual_type, description, **kwargs)
+            klass.method(:argument)
+                 .super_method
+                 .call(name, actual_type, description, **kwargs)
+          rescue MissingType => e
+            warn <<~TEXT
+
+              Stardust Compilation Error
+              Type #{e.message} is not defined.
+
+            TEXT
+          end
         }
       end
 
@@ -27,6 +36,7 @@ module Stardust
       end
 
       def self.replace_types!
+        return unless @__types_to_lookup__
         @__types_to_lookup__.each { |lookup| lookup.call(self) }
       end
 

@@ -71,7 +71,7 @@ module Stardust
           is_a_array = true
         end
 
-        raise "Can't find type #{type}" unless @@__types__[type]
+        raise MissingType, type.to_s unless @@__types__[type]
 
         if is_a_array
           [@@__types__[type]]
@@ -82,7 +82,16 @@ module Stardust
 
       def self.replace_types!
         @@__types__.values.each do |klass|
-          klass.replace_types! if klass.respond_to?(:replace_types!)
+          begin
+            klass.replace_types! if klass.respond_to?(:replace_types!)
+          rescue MissingType => e
+            warn <<~TEXT
+
+              Stardust Compilation Error
+              Type #{e.message} is not defined.
+
+            TEXT
+          end
         end
 
         query_class = Class.new(::Stardust::GraphQL::Object)
@@ -108,16 +117,34 @@ module Stardust
             &block
           )
         end
-        query_class.replace_types!
 
+        begin
+          query_class.replace_types!
+        rescue MissingType => e
+          warn <<~TEXT
+
+            Stardust Compilation Error
+            Type #{name.to_s} is not defined.
+
+          TEXT
+        end
         Schema.query(query_class)
 
 
         mutation_class = Class.new(::GraphQL::Schema::Object)
         mutation_class.graphql_name("MutationRoot")
         @@__mutations__.each do |name, mutation|
-          mutation.replace_types!
-          mutation_class.send(:field, name, mutation: mutation )
+          begin
+            mutation.replace_types!
+            mutation_class.send(:field, name, mutation: mutation )
+          rescue MissingType => e
+            warn <<~TEXT
+
+              Stardust Compilation Error
+              Type #{name.to_s} is not defined.
+
+            TEXT
+          end
         end
         Schema.mutation(mutation_class)
       end
