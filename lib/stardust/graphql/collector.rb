@@ -14,10 +14,9 @@ module Stardust
 
 
       @@__types__ = {}.merge(FIXED_TYPES)
+      @@__defined_types__ = []
       @@__queries__ = {}
       @@__mutations__ = {}
-
-      @@__defined_types__ = []
 
       def add_type(type, block, object_klass)
         if type.in?(@@__types__.keys)
@@ -33,11 +32,15 @@ module Stardust
       end
 
       def self.clear_definitions!
-        @@__defined_types__.each do |type|
-          ::Stardust::GraphQL::Types.send(:remove_const, type)
-        end
         @@__defined_types__ = []
         @@__types__ = {}.merge(FIXED_TYPES)
+        @@__queries__ = {}
+        @@__mutations__ = {}
+
+        ::Stardust::GraphQL.send(:remove_const, "Types")
+        ::Stardust::GraphQL.send(:remove_const, "Schema")
+        load 'stardust/graphql/types'
+        load 'stardust/graphql/schema'
       end
 
       def add_query(name, query:)
@@ -94,7 +97,6 @@ module Stardust
 
             field.instance_variable_set(:@resolver_class, query)
             field.instance_variable_set(:@resolver_method, :resolve)
-
             field.extension(Extensions::Authorize)
           }
 
@@ -114,7 +116,6 @@ module Stardust
         mutation_class = Class.new(::GraphQL::Schema::Object)
         mutation_class.graphql_name("MutationRoot")
         @@__mutations__.each do |name, mutation|
-          mutation.send(:field, :error, :error, null: true)
           mutation.replace_types!
           mutation_class.send(:field, name, mutation: mutation )
         end

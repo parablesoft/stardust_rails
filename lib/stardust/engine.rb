@@ -15,6 +15,27 @@ module Stardust
       "app/graph/mutations",
     ].freeze
 
+    initializer "stardust.graph.draw" do |app|
+
+      # Load graph definitions
+      DIRS.each do |dir|
+        Dir[Rails.root.join(dir).join("**/*.rb")].each do |file|
+          require file
+        end
+      end
+      Stardust::GraphQL::Collector.replace_types!
+
+      ActiveSupport::Reloader.after_class_unload do
+        Stardust::GraphQL::Collector.clear_definitions!
+        DIRS.each do |dir|
+          Dir[Rails.root.join(dir).join("**/*.rb")].each do |file|
+            load file
+          end
+        end
+        Stardust::GraphQL::Collector.replace_types!
+      end
+    end
+
     config.to_prepare do
 
       # Setup logger
@@ -27,27 +48,6 @@ module Stardust
       # Handle email interceptor
       if Stardust.instance == :staging
         ActionMailer::Base.register_interceptor( Stardust::Email::Interceptor )
-      end
-
-
-      # Load graph definitions
-      DIRS.each do |dir|
-        Dir[Rails.root.join(dir).join("**/*.rb")].each do |file|
-          require file
-        end
-      end
-      Stardust::GraphQL::Collector.replace_types!
-
-
-      # Reload graph definitions with "reload!" in development
-      ActiveSupport::Reloader.after_class_unload do
-        Stardust::GraphQL::Collector.clear_definitions!
-        DIRS.each do |dir|
-          Dir[Rails.root.join(dir).join("**/*.rb")].each do |file|
-            load file
-          end
-        end
-        Stardust::GraphQL::Collector.replace_types!
       end
 
     end

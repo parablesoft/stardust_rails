@@ -1,6 +1,6 @@
 module Stardust
   module GraphQL
-    class Query 
+    class Query
       attr_reader :context
 
       def initialize(object:, context:)

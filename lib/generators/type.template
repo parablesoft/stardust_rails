@@ -1,0 +1,8 @@
+Stardust::GraphQL.define_types do
+
+  object :<%= type_name %> do
+    description "TODO: Write a detailed description"
+    field :id, :id, null: false
+  end
+
+end

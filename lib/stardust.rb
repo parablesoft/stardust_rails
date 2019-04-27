@@ -13,3 +13,4 @@ module Stardust
 end
 
 require "stardust/graphql"
+require "stardust/generators"
