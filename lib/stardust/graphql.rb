@@ -19,5 +19,7 @@ end
 
 require "stardust/graphql/field"
 require "stardust/graphql/object"
+require "stardust/graphql/union"
+require "stardust/graphql/scalar"
 require "stardust/graphql/collector"
 require "stardust/graphql/input_object"

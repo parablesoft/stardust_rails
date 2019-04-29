@@ -2,8 +2,14 @@ module Stardust
   module GraphQL
     class Mutation < ::GraphQL::Schema::Mutation
 
+      def current_user
+        context[:current_user]
+      end
+
       def self.argument(name, type, description = nil, loads: nil, **kwargs)
         @__types_to_lookup__ ||= []
+        the_file = caller[0][/[^:]+/].gsub(Rails.root.to_s, "")
+        the_line = caller[0].split(":")[1]
         @__types_to_lookup__ << lambda { |klass|
           begin
             actual_type = Collector.lookup_type(type)
@@ -16,8 +22,11 @@ module Stardust
           rescue MissingType => e
             warn <<~TEXT
 
-              Stardust Compilation Error
-              Type #{e.message} is not defined.
+              Stardust Compilation Warning
+                - MESSAGE: Type #{e.message} is not defined.
+                - RESULT:  This mutation is not added to the graph.
+                - FILE:    #{the_file}
+                - LINE:    #{the_line}
 
             TEXT
           end

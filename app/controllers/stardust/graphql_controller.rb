@@ -2,31 +2,18 @@ module Stardust
   class GraphQLController < ActionController::API
 
     def execute
-      variables = ensure_hash(params[:variables])
-      query = params[:query]
-      operation_name = params[:operationName]
+      result = nil
+      
+      around_execute do
+        result = GraphQL::Schema.execute(
+          query,
+          variables: variables,
+          context: context,
+          operation_name: operation_name
+        )
+      end
+      render json: result
 
-      context = {
-        # Query context goes here, for example:
-        current_user: current_user,
-        ip: request.remote_ip,
-        user_agent: request.headers["HTTP_USER_AGENT"],
-        timezone: "Eastern Time (US & Canada)"
-      }
-
-      result = GraphQL::Schema.execute(
-        query,
-        variables: variables,
-        context: context,
-        operation_name: operation_name
-      )
-
-    render json: result
-
-    # rescue JWT::ExpiredSignature
-    #   render json: { error: {
-    #     message: "Expired ExpiredSignature",
-    #   }}, status: 401
     rescue StandardError => e
       raise e unless Rails.env.development?
       handle_error_in_development e
@@ -35,15 +22,26 @@ module Stardust
 
     private
 
-    # gets current user from token stored in session
-    def current_user
-      if auth_header = request.headers['Authorization']
-        # TODO: add logic for authorization verification
+    def operation_name
+      params[:operationName]
+    end
 
-        # token = request.headers['Authorization'].split(" ").last
-        # decoded_hash = Auth0::Decoder.decode(token)
-        # User.new(decoded_hash[0].deep_symbolize_keys)
-      end
+    def query
+      params[:query]
+    end
+
+    def variables
+      ensure_hash(params[:variables])
+    end
+
+    def context
+      setup_context = Stardust.configuration.graphql.setup_context
+      setup_context ? setup_context.(request) : {}
+    end
+
+    def around_execute
+      around_execute = Stardust.configuration.graphql.around_execute
+      yield around_execute
     end
 
     # Handle form data, JSON body, or a blank value
@@ -68,7 +66,14 @@ module Stardust
       logger.error e.message
       logger.error e.backtrace.join("\n")
 
-      render json: { error: { message: e.message, backtrace: e.backtrace }, data: {} }, status: 500
+      render json: {
+               error: {
+                 message: e.message,
+                 backtrace: e.backtrace
+               },
+               data: {}
+             }, status: 500
+
     end
   end
 end

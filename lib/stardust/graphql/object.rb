@@ -21,6 +21,10 @@ module Stardust
         return unless @__types_to_lookup__
         @__types_to_lookup__.each {|lookup| lookup.(self)}
       end
+
+      def current_user
+        context[:current_user]
+      end
     end
   end
 end

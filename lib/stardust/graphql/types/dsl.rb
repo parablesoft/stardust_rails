@@ -15,6 +15,10 @@ module Stardust
           def scalar(type, &block)
             Collector.add_type( type, block, Scalar )
           end
+
+          def union(type, &block)
+            Collector.add_type( type, block, Union )
+          end
         end
 
       end

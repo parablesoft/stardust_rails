@@ -1,5 +1,5 @@
-require 'stardust/email/interceptor'
 require "graphql/rails_logger"
+require 'apollo_upload_server/middleware'
 
 module Stardust
   class Engine < ::Rails::Engine
@@ -16,6 +16,9 @@ module Stardust
     ].freeze
 
     initializer "stardust.graph.draw" do |app|
+
+      # !!IMPORTANT without this here the logger gets fired before the upload middlware
+      app.middleware.use ApolloUploadServer::Middleware
 
       # Load graph definitions
       DIRS.each do |dir|
@@ -37,19 +40,12 @@ module Stardust
     end
 
     config.to_prepare do
-
       # Setup logger
       ::GraphQL::RailsLogger.configure do |config|
         config.white_list = {
           'Stardust::GraphQLController' => %w(execute)
         }
       end
-
-      # Handle email interceptor
-      if Stardust.instance == :staging
-        ActionMailer::Base.register_interceptor( Stardust::Email::Interceptor )
-      end
-
     end
   end
 end

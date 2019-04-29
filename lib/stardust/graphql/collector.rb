@@ -5,10 +5,12 @@ module Stardust
 
       FIXED_TYPES = {
         id: ::GraphQL::Types::ID,
+        int: Integer,
         integer: Integer,
         float: Float,
         string: String,
         date: ::GraphQL::Types::ISO8601DateTime,
+        datetime: ::GraphQL::Types::ISO8601DateTime,
         boolean: ::GraphQL::Types::Boolean,
       }.freeze
 
@@ -26,7 +28,13 @@ module Stardust
         @@__defined_types__ << type.to_s.camelize
 
         klass = Class.new(object_klass, &block)
-        klass.graphql_name(type.to_s.camelize)
+
+        begin
+          klass.graphql_name
+        rescue NotImplementedError
+          klass.graphql_name(type.to_s.camelize)
+        end
+        
         ::Stardust::GraphQL::Types.const_set("#{type.to_s.camelize}", klass)
         @@__types__[type] = "Stardust::GraphQL::Types::#{type.to_s.camelize}".constantize
       end
@@ -124,7 +132,7 @@ module Stardust
           warn <<~TEXT
 
             Stardust Compilation Error
-            Type #{name.to_s} is not defined.
+            Type #{e.message} is not defined.
 
           TEXT
         end
@@ -141,7 +149,7 @@ module Stardust
             warn <<~TEXT
 
               Stardust Compilation Error
-              Type #{name.to_s} is not defined.
+              Type #{e.message} is not defined.
 
             TEXT
           end

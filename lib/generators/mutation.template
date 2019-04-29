@@ -2,19 +2,20 @@ Stardust::GraphQL.define_mutation :<%= type_name %> do
 
   description "TODO: Write a detailed description"
 
-  ## Can this query return nil
-  null true
-
   ## Optional
   ##
-  ## argument :id, :integer, required: true,
-  ##               loads: ::MyModel, as: :model
+  # argument :id, :integer, required: true,
+  #               loads: ::MyModel, as: :model
 
   ## Required
   ## What fields does this mutation return
   ##
-  ## field :item, :item, null: true
-  ## field :error, :error, null: true
+  # field :item, :item, null: true
+  # field :error, :error, null: true
+
+  ## Can this query return nil
+  # null true
+
 
   def resolve
     ## TODO: add your logic here
