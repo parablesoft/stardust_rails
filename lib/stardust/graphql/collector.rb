@@ -34,21 +34,21 @@ module Stardust
         rescue NotImplementedError
           klass.graphql_name(type.to_s.camelize)
         end
-        
+
         ::Stardust::GraphQL::Types.const_set("#{type.to_s.camelize}", klass)
         @@__types__[type] = "Stardust::GraphQL::Types::#{type.to_s.camelize}".constantize
       end
 
       def self.clear_definitions!
+
+        @@__defined_types__.each do |type|
+          Stardust::GraphQL::Types.send(:remove_const, type)
+        end
+
         @@__defined_types__ = []
         @@__types__ = {}.merge(FIXED_TYPES)
         @@__queries__ = {}
         @@__mutations__ = {}
-
-        ::Stardust::GraphQL.send(:remove_const, "Types")
-        ::Stardust::GraphQL.send(:remove_const, "Schema")
-        load 'stardust/graphql/types'
-        load 'stardust/graphql/schema'
       end
 
       def add_query(name, query:)
@@ -102,6 +102,15 @@ module Stardust
           end
         end
 
+        ## Here we define a new graphql type
+        if Stardust::GraphQL.const_defined?("Schema")
+          Stardust::GraphQL.send(:remove_const, "Schema")
+        end
+        klass = Class.new(::GraphQL::Schema) do
+          use ::GraphQL::Batch
+        end
+        Stardust::GraphQL.const_set("Schema", klass)
+
         query_class = Class.new(::Stardust::GraphQL::Object)
         query_class.graphql_name("QueryRoot")
         @@__queries__.each do |name, query|
@@ -136,7 +145,7 @@ module Stardust
 
           TEXT
         end
-        Schema.query(query_class)
+        Stardust::GraphQL::Schema.query(query_class)
 
 
         mutation_class = Class.new(::GraphQL::Schema::Object)
@@ -154,7 +163,7 @@ module Stardust
             TEXT
           end
         end
-        Schema.mutation(mutation_class)
+        Stardust::GraphQL::Schema.mutation(mutation_class)
       end
     end
   end

@@ -1,6 +1,6 @@
 module Stardust
   module GraphQL
-    class Scalar < GraphQL::Schema::Scalar
+    class Scalar < ::GraphQL::Schema::Scalar
 
       def self.coerce_input(input_value = nil, context = nil, &block)
         if block_given?

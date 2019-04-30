@@ -1,5 +1,3 @@
-require "rails"
-require "stardust/engine"
 require "stardust/instance"
 require "stardust/configuration"
 
@@ -24,3 +22,4 @@ end
 
 require "stardust/graphql"
 require "stardust/generators"
+require "stardust/engine"

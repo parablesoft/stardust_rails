@@ -1,6 +1,6 @@
 module Stardust
   module GraphQL
-    class Union < GraphQL::Schema::Union
+    class Union < ::GraphQL::Schema::Union
 
 
       def self.possible_type(type, klass)

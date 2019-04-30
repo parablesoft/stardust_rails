@@ -4,7 +4,6 @@ require "graphql/rails_logger"
 require "graphql/batch"
 
 require "stardust/graphql/types"
-require "stardust/graphql/schema"
 
 require "stardust/graphql/dsl"
 require "stardust/graphql/types/dsl"
@@ -17,9 +16,14 @@ module Stardust
   end
 end
 
-require "stardust/graphql/field"
-require "stardust/graphql/object"
-require "stardust/graphql/union"
-require "stardust/graphql/scalar"
 require "stardust/graphql/collector"
+require "stardust/graphql/configuration"
+require "stardust/graphql/field"
+require "stardust/graphql/input_object"
+require "stardust/graphql/mutation"
+require "stardust/graphql/object"
+require "stardust/graphql/query"
+require "stardust/graphql/scalar"
+require "stardust/graphql/union"
+require "stardust/graphql/extensions/authorize"
 require "stardust/graphql/input_object"

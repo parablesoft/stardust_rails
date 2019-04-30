@@ -1,13 +1,7 @@
 require "graphql/rails_logger"
 require 'apollo_upload_server/middleware'
 
-module Stardust
-  class Engine < ::Rails::Engine
-
-    config.autoload_paths += Dir[
-      "#{config.root}/app/**/",
-      "#{config.root}/lib/**/"
-    ]
+class Stardust::Engine < ::Rails::Engine
 
     DIRS = [
       "app/graph/types",
@@ -47,5 +41,4 @@ module Stardust
         }
       end
     end
-  end
 end
