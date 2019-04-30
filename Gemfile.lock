@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    stardust (0.1.1.alpha.1)
+    stardust_rails (0.1.1)
       apollo_upload_server (= 2.0.0.beta.1)
       graphiql-rails (~> 1.7.0)
       graphql (~> 1.9.3)
@@ -143,7 +143,7 @@ PLATFORMS
 
 DEPENDENCIES
   sqlite3 (~> 1.3.6)
-  stardust!
+  stardust_rails!
 
 BUNDLED WITH
    1.16.2
