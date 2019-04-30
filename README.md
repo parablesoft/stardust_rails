@@ -31,6 +31,18 @@ Rails.application.routes.draw do
 end
 ```
 
+Generate your first type, query or mutation:
+```bash
+$ rails g stardust:example
+$ rails g stardust:type foo
+$ rails g stardust:query foos
+$ rails g stardust:mutation bar
+end
+
+View GraphiQL here:
+[http://localhost:3000/graphiql](http://localhost:3000/graphiql)
+
+
 ## Contributing
 Contribution directions go here.
 
