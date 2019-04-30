@@ -8,7 +8,7 @@ How to use my plugin.
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'stardust_rails'
+gem 'stardust_rails', require: 'stardust'
 ```
 
 And then execute:
@@ -19,6 +19,16 @@ $ bundle
 Or install it yourself as:
 ```bash
 $ gem install stardust_rails
+```
+
+Mount the engine:
+```ruby
+# config/routes.rb
+Rails.application.routes.draw do
+  ...
+  mount Stardust::Engine, at: "/"
+  ...
+end
 ```
 
 ## Contributing

@@ -5,7 +5,7 @@ require "stardust/version"
 
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |spec|
-  spec.name        = "stardust"
+  spec.name        = "stardust_rails"
   spec.version     = Stardust::VERSION
   spec.authors     = ["Bradley Wittenbrook"]
   spec.email       = ["bradley.wittenbrook@gmail.com"]
@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
   if spec.respond_to?(:metadata)
-    spec.metadata["allowed_push_host"] = "TODO: Set to 'http://mygemserver.com'"
+    spec.metadata["allowed_push_host"] = "https://rubygems.org"
   else
     raise "RubyGems 2.0 or newer is required to protect against " \
       "public gem pushes."
@@ -31,5 +31,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "graphql-rails_logger", "~> 1.1.0"
   spec.add_dependency "apollo_upload_server", "2.0.0.beta.1"
   spec.add_dependency "graphql-batch", "~> 0.4.0"
-  
+
 end
