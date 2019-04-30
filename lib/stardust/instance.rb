@@ -3,12 +3,12 @@ module Stardust
 
     def instance
       if Rails.env == 'production'
-        ENV['INSTANCE'].to_sym || :production
+        ENV['INSTANCE']&.to_sym || :production
       else
         Rails.env.to_sym
       end
     end
-    
+
     def production?
       instance == :production
     end
