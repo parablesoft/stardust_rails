@@ -8,11 +8,7 @@ module Stardust
         Rails.env.to_sym
       end
     end
-
-    def image_url(image)
-      "#{Stardust::Config::APP_WEB_URL}/assets/images/#{image}"
-    end
-
+    
     def production?
       instance == :production
     end
