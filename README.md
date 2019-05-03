@@ -78,6 +78,53 @@ Stardust::GraphQL.define_query :items do
 end
 ```
 
+### Authorization
+
+
+#### Initializer
+To use authorization with this gem, you must set it up with an initializer to process setup the context in light of the request.
+
+```ruby
+Stardust.configure do |config|
+
+  config.configure_graphql do |graphql|
+    # Hook to setup context
+    graphql.setup_context do |request|
+        {
+        current_user: Accounts::User::VerifyAuthorization.(request),
+        ip: request.remote_ip,
+        user_agent: request.headers["HTTP_USER_AGENT"],
+        timezone: "Eastern Time (US & Canada)"
+        }
+    end
+  end
+end
+```
+
+In the code above there was an authorizer method to get the current user.
+
+**Authorizer method**
+
+```ruby
+Accounts::User::VerifyAuthorization.(request)
+```
+
+This is not presently built into the stardust_rails gem. You will need to provide your own method for processing the request.
+
+<hr/>
+
+#### Queries and Mutations
+
+For a query or mutation, define self.authorized?(_,ctx) on your class. Within that you may define whatever you'd like for specifying who has access to run it.
+
+```ruby
+def self.authorized?(_, ctx)
+  ctx[:current_user]
+end
+```
+
+
+
 ### Type
 
 ```ruby
@@ -91,6 +138,8 @@ Stardust::GraphQL.define_types do
 
 end
 ```
+
+
 
 
 
