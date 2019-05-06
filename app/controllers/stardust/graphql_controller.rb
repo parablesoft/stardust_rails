@@ -3,7 +3,7 @@ module Stardust
 
     def execute
       result = nil
-      
+
       around_execute do
         result = GraphQL::Schema.execute(
           query,
@@ -14,6 +14,11 @@ module Stardust
       end
       render json: result
 
+
+    rescue Stardust::Errors::FailedAuthorization => e
+      render json: {
+        error: { message: e.message }
+      }, status: 401
     rescue StandardError => e
       raise e unless Rails.env.development?
       handle_error_in_development e
