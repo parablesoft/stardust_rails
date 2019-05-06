@@ -1,7 +1,6 @@
 require "stardust/instance"
 require "stardust/configuration"
 
-# this allows us to
 ActiveSupport::Inflector.inflections(:en) do |inflect|
   inflect.acronym "GraphQL"
   inflect.acronym "DSL"
@@ -20,6 +19,7 @@ module Stardust
 
 end
 
+require "stardust/errors"
 require "stardust/graphql"
 require "stardust/generators"
 require "stardust/engine"
