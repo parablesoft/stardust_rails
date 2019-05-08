@@ -73,6 +73,10 @@ module Stardust
         @@__queries__
       end
 
+      def self.mutations
+        @@__mutations__
+      end
+
       def self.lookup_type(type)
         if type.is_a?(Array)
           type = type.first
