@@ -6,6 +6,10 @@ module Stardust
         context[:current_user]
       end
 
+      def self.get_null
+        @null
+      end
+
       def self.argument(name, type, description = nil, loads: nil, **kwargs)
         @__types_to_lookup__ ||= []
         the_file = caller[0][/[^:]+/].gsub(Rails.root.to_s, "")
