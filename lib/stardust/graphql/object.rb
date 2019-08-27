@@ -4,12 +4,24 @@ module Stardust
 
       field_class Field
 
+      def self.implements(type)
+        @__types_to_lookup__ ||= []
+        @__types_to_lookup__ << ->(klass) {
+          actual_type = Collector.lookup_type(type)
+
+          klass
+          .method(:implements)
+          .super_method
+          .call(actual_type)
+        }
+      end
+
       def self.field(name, type, description = nil, **kwargs, &block)
 
         @__types_to_lookup__ ||= []
         @__types_to_lookup__ << ->(klass) {
           actual_type = Collector.lookup_type(type)
-
+          
           klass
           .method(:field)
           .super_method
