@@ -8,6 +8,10 @@ module Stardust
             Collector.add_type( type, block, Object)
           end
 
+          def interface(type, &block)
+            Collector.add_type( type, block, Interface)
+          end
+
           def input_object(type, &block)
             Collector.add_type( type, block, InputObject )
           end

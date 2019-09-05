@@ -27,7 +27,18 @@ module Stardust
 
         @@__defined_types__ << type.to_s.camelize
 
-        klass = Class.new(object_klass, &block)
+        klass = nil
+        if object_klass.is_a?(Class)
+          klass = Class.new(object_klass, &block)
+        else
+          # interfaces are modules
+          klass = Module.new
+          klass.include(object_klass)
+          klass.module_eval(&block)
+          unless klass.graphql_name
+            klass.graphql_name type.to_s.camelize
+          end
+        end
 
         begin
           klass.graphql_name
@@ -78,6 +89,8 @@ module Stardust
       end
 
       def self.lookup_type(type)
+        # puts "looking up #{type.class}: #{type}"
+
         if type.is_a?(Array)
           type = type.first
           is_a_array = true
