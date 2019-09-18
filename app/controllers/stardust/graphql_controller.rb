@@ -8,11 +8,11 @@ module Stardust
         result = GraphQL::Schema.execute(
           query,
           variables: variables,
-          context: context,
+          context: context.merge({tracing_enabled: tracing_enabled}),
           operation_name: operation_name
         )
       end
-      render json: result
+      render json: ApolloFederation::Tracing.attach_trace_to_result(result)
 
 
     rescue Stardust::Errors::FailedAuthorization => e
@@ -37,6 +37,10 @@ module Stardust
 
     def variables
       ensure_hash(params[:variables])
+    end
+
+    def tracing_enabled
+      ApolloFederation::Tracing.should_add_traces(headers)
     end
 
     def context

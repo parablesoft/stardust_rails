@@ -124,6 +124,8 @@ module Stardust
           Stardust::GraphQL.send(:remove_const, "Schema")
         end
         klass = Class.new(::GraphQL::Schema) do
+          include ::Stardust::GraphQL::Federated
+          use ApolloFederation::Tracing
           use ::GraphQL::Batch
         end
         Stardust::GraphQL.const_set("Schema", klass)
@@ -166,7 +168,7 @@ module Stardust
 
 
         mutation_class = Class.new(::GraphQL::Schema::Object)
-        mutation_class.graphql_name("MutationRoot")
+        mutation_class.graphql_name("Mutation")
         @@__mutations__.each do |name, mutation|
           begin
             mutation.replace_types!

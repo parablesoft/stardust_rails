@@ -31,5 +31,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "graphql-rails_logger", "~> 1.1.0"
   spec.add_dependency "apollo_upload_server", "2.0.0.beta.1"
   spec.add_dependency "graphql-batch", "~> 0.4.0"
+  spec.add_dependency "apollo-federation", "~> 0.4.0"
 
 end

@@ -1,6 +1,7 @@
 module Stardust
   module GraphQL
     class Object < ::GraphQL::Schema::Object
+      include ApolloFederation::Object
 
       field_class Field
 
@@ -21,7 +22,7 @@ module Stardust
         @__types_to_lookup__ ||= []
         @__types_to_lookup__ << ->(klass) {
           actual_type = Collector.lookup_type(type)
-          
+
           klass
           .method(:field)
           .super_method
