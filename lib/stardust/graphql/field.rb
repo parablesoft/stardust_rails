@@ -1,6 +1,10 @@
+require 'apollo-federation'
+
 module Stardust
   module GraphQL
     class Field < ::GraphQL::Schema::Field
+
+      include ApolloFederation::Field
 
       def initialize(*args, **kwargs, &block)
         super(*args, connection: false, **kwargs, &block)
@@ -23,7 +27,7 @@ module Stardust
       def resolve(&block)
         @resolve = block
       end
-      
+
       def argument(name, type, description = nil, loads: nil, **kwargs)
         actual_type = Collector.lookup_type(type)
         if loads
