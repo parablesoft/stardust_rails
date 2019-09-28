@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.version     = Stardust::VERSION
   spec.authors     = ["Bradley Wittenbrook"]
   spec.email       = ["bradley.wittenbrook@gmail.com"]
-  spec.homepage    = "https://github.com/hatch-software/stardust_rails"
+  spec.homepage    = "https://github.com/parablesoft/stardust_rails"
   spec.summary     = "GraphQL + Rails = Programmer Bliss"
   spec.description = "Modernize API development in Rails"
   spec.license     = "MIT"
