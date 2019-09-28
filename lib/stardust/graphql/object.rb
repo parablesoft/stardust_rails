@@ -18,7 +18,6 @@ module Stardust
       end
 
       def self.field(name, type, description = nil, **kwargs, &block)
-
         @__types_to_lookup__ ||= []
         @__types_to_lookup__ << ->(klass) {
           actual_type = Collector.lookup_type(type)

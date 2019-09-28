@@ -1,9 +1,14 @@
+require 'apollo-federation/entities_field'
+require 'apollo-federation/service_field'
+require 'apollo-federation/any'
+
 module Stardust
   module GraphQL
     module Collector
       module_function
 
       FIXED_TYPES = {
+        any: ApolloFederation::Any,
         id: ::GraphQL::Types::ID,
         int: Integer,
         integer: Integer,
@@ -19,6 +24,7 @@ module Stardust
       @@__defined_types__ = []
       @@__queries__ = {}
       @@__mutations__ = {}
+      @@__lookedup_types__ = []
 
       def add_type(type, block, object_klass)
         if type.in?(@@__types__.keys)
@@ -57,6 +63,7 @@ module Stardust
         end
 
         @@__defined_types__ = []
+        @@__lookedup_types__ = []
         @@__types__ = {}.merge(FIXED_TYPES)
         @@__queries__ = {}
         @@__mutations__ = {}
@@ -92,14 +99,19 @@ module Stardust
         # puts "looking up #{type.class}: #{type}"
 
         if type.is_a?(Array)
+          rest = type[1..-1]
           type = type.first
           is_a_array = true
         end
 
         raise MissingType, type.to_s unless @@__types__[type]
 
+        @@__lookedup_types__ << type
+        @@__lookedup_types__ = @@__lookedup_types__.uniq
+
+
         if is_a_array
-          [@@__types__[type]]
+          [@@__types__[type]] + rest
         else
           @@__types__[type]
         end
@@ -123,15 +135,48 @@ module Stardust
         if Stardust::GraphQL.const_defined?("Schema")
           Stardust::GraphQL.send(:remove_const, "Schema")
         end
+
         klass = Class.new(::GraphQL::Schema) do
           include ::Stardust::GraphQL::Federated
           use ApolloFederation::Tracing
           use ::GraphQL::Batch
+
         end
         Stardust::GraphQL.const_set("Schema", klass)
 
-        query_class = Class.new(::Stardust::GraphQL::Object)
-        query_class.graphql_name("QueryRoot")
+
+        # a lot of this is extracted from apollo federation gem
+        # to be used in stardust
+        query_class = Class.new(::Stardust::GraphQL::Object) do
+          graphql_name 'Query'
+
+          include ApolloFederation::EntitiesField
+          include ApolloFederation::ServiceField
+        end
+
+        possible_entities =
+          @@__types__
+          .values
+          .select{|i| i < Stardust::GraphQL::Object}
+          .map(&:to_graphql).select do |type|
+            !type.introspection? && !type.default_scalar? &&
+            type.metadata[:federation_directives]&.any? { |directive|
+              directive[:name] == 'key'
+            }
+          end
+
+        if !possible_entities.empty?
+          entity_type = Class.new(ApolloFederation::Entity) do
+            possible_types(*possible_entities)
+          end
+
+          @@__types__[:_frederated_entities] = entity_type
+
+          query_class.field(:_entities, [:_frederated_entities, null: true], null: false) do
+            argument :representations, [:any], required: true
+          end
+        end
+
         @@__queries__.each do |name, query|
 
           block = ->(field) {
@@ -183,6 +228,18 @@ module Stardust
           end
         end
         Stardust::GraphQL::Schema.mutation(mutation_class)
+
+        #
+        # orphaned_types =
+        #   @@__types__
+        #   .select{|k,v|
+        #     !k.in?(@@__lookedup_types__) &&
+        #     v < Stardust::GraphQL::Object
+        #   }
+        #   .values
+        #   .map(&:to_graphql)
+        #
+        # Stardust::GraphQL::Schema.orphan_types orphaned_types
       end
     end
   end
