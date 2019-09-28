@@ -16,6 +16,7 @@ module Stardust
   end
 end
 
+require "stardust/graphql/warden_patch"
 require "stardust/graphql/collector"
 require "stardust/graphql/configuration"
 require "stardust/graphql/field"
