@@ -48,7 +48,7 @@ module Stardust
 
         begin
           klass.graphql_name
-        rescue NotImplementedError
+        rescue  NotImplementedError, ::GraphQL::RequiredImplementationMissingError
           klass.graphql_name(type.to_s.camelize)
         end
 
