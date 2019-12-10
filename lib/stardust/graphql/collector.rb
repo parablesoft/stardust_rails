@@ -1,6 +1,7 @@
 require 'apollo-federation/entities_field'
 require 'apollo-federation/service_field'
 require 'apollo-federation/any'
+require 'apollo-federation/entity_type_resolution_extension'
 
 module Stardust
   module GraphQL
@@ -154,29 +155,6 @@ module Stardust
           include ApolloFederation::ServiceField
         end
 
-        possible_entities =
-          @@__types__
-          .values
-          .select{|i| i < Stardust::GraphQL::Object}
-          .map(&:to_graphql).select do |type|
-            !type.introspection? && !type.default_scalar? &&
-            type.metadata[:federation_directives]&.any? { |directive|
-              directive[:name] == 'key'
-            }
-          end
-
-        if !possible_entities.empty?
-          entity_type = Class.new(ApolloFederation::Entity) do
-            possible_types(*possible_entities)
-          end
-
-          @@__types__[:_frederated_entities] = entity_type
-
-          query_class.field(:_entities, [:_frederated_entities, null: true], null: false) do
-            argument :representations, [:any], required: true
-          end
-        end
-
         @@__queries__.each do |name, query|
 
           block = ->(field) {
@@ -199,6 +177,39 @@ module Stardust
           )
         end
 
+        possible_entities =
+          @@__types__
+          .map{|k,v| [k,v]}
+          .select{|i| i[1] < Stardust::GraphQL::Object}
+          .select{|i|
+            type = i[1].to_graphql
+            !type.introspection? && !type.default_scalar? &&
+            type.metadata[:federation_directives]&.any? { |directive|
+              directive[:name] == 'key'
+            }
+          }
+          .map{|i| i[0]}
+
+        if !possible_entities.empty?
+          entity_type = Class.new(Stardust::GraphQL::Union) do
+            graphql_name '_Entity'
+            possible_entities.each do |possible_entity|   
+              possible_type(possible_entity, @@__types__[possible_entity])
+            end
+
+            def self.resolve_type(object, context)
+              context[object]
+            end
+          end
+          entity_type.replace_types!
+          @@__types__[:_frederated_entities] = entity_type
+
+          query_class.field(:_entities, [:_frederated_entities, null: true], null: false) do
+            argument :representations, [:any], required: true
+            extension(EntityTypeResolutionExtension)
+          end
+        end
+
         begin
           query_class.replace_types!
         rescue MissingType => e
@@ -209,6 +220,8 @@ module Stardust
 
           TEXT
         end
+
+
         Stardust::GraphQL::Schema.query(query_class)
 
 
