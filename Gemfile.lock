@@ -67,7 +67,7 @@ GEM
     erubi (1.9.0)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
-    google-protobuf (3.9.2-universal-darwin)
+    google-protobuf (3.9.2)
     graphiql-rails (1.7.0)
       railties
       sprockets-rails
@@ -98,7 +98,7 @@ GEM
     nokogiri (1.10.4)
       mini_portile2 (~> 2.4.0)
     promise.rb (0.7.4)
-    rack (2.0.7)
+    rack (2.2.2)
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
     rails (5.2.3)
