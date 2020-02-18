@@ -2,9 +2,11 @@ module Stardust
   module GraphQL
     class Query
       attr_reader :context
+      attr_reader :field
 
-      def initialize(object:, context:)
+      def initialize(object:, context:, field: nil)
         @context = context
+        @field = field
       end
 
       def current_user
