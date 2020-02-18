@@ -26,7 +26,7 @@ Gem::Specification.new do |spec|
   spec.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
 
   spec.add_dependency "rails", ">= 5.0"
-  spec.add_dependency "graphql", "~> 1.9.3"
+  spec.add_dependency "graphql", "~> 1.9.16"
   spec.add_dependency "graphiql-rails", "~> 1.7.0"
   spec.add_dependency "graphql-rails_logger", "~> 1.1.0"
   spec.add_dependency "apollo_upload_server", "2.0.0.beta.1"
