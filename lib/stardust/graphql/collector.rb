@@ -138,7 +138,8 @@ module Stardust
         end
 
         klass = Class.new(::GraphQL::Schema) do
-          include ::Stardust::GraphQL::Federated
+          use ::GraphQL::Analysis::AST
+          include ApolloFederation::Schema
           use ApolloFederation::Tracing
           use ::GraphQL::Batch
 
@@ -221,9 +222,7 @@ module Stardust
           TEXT
         end
 
-
         Stardust::GraphQL::Schema.query(query_class)
-
 
         mutation_class = Class.new(::GraphQL::Schema::Object)
         mutation_class.graphql_name("Mutation")
@@ -241,18 +240,6 @@ module Stardust
           end
         end
         Stardust::GraphQL::Schema.mutation(mutation_class)
-
-        #
-        # orphaned_types =
-        #   @@__types__
-        #   .select{|k,v|
-        #     !k.in?(@@__lookedup_types__) &&
-        #     v < Stardust::GraphQL::Object
-        #   }
-        #   .values
-        #   .map(&:to_graphql)
-        #
-        # Stardust::GraphQL::Schema.orphan_types orphaned_types
       end
     end
   end

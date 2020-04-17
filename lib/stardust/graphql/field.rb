@@ -14,13 +14,13 @@ module Stardust
         @authorize = block_given? ? block : proc
       end
 
-      def authorized?(obj, ctx)
+      def authorized?(obj, args, ctx)
         if @authorize.respond_to?(:call)
-          unless @authorize.(obj, ctx)
+          unless @authorize.(obj, args, ctx)
             raise ::GraphQL::ExecutionError, "Not authorized"
           end
         else
-          super(obj, ctx)
+          super(obj, args, ctx)
         end
       end
 

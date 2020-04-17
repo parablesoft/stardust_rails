@@ -2,6 +2,7 @@ require "graphql"
 require "graphiql/rails"
 require "graphql/rails_logger"
 require "graphql/batch"
+require 'apollo-federation'
 
 require "stardust/graphql/types"
 
@@ -29,4 +30,3 @@ require "stardust/graphql/scalar"
 require "stardust/graphql/union"
 require "stardust/graphql/extensions/authorize"
 require "stardust/graphql/input_object"
-require "stardust/graphql/federated"
