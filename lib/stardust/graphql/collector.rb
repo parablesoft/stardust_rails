@@ -96,6 +96,12 @@ module Stardust
         @@__mutations__
       end
 
+      def self.stardust_page_info_type 
+        @@stardust_page_info_type ||= Class.new( ::GraphQL::Types::Relay::PageInfo) do 
+          graphql_name("Stardust_PageInfo")
+        end
+      end
+
       def self.lookup_type(type)
         # puts "looking up #{type.class}: #{type}"
 
@@ -124,6 +130,8 @@ module Stardust
 
 
         if is_a_connection
+
+          page_info_type = stardust_page_info_type
           edge_type = Class.new(::GraphQL::Types::Relay::BaseEdge) do 
             graphql_name "#{@@__types__[type].graphql_name}Edge"
             node_type(@@__types__[type])
@@ -132,6 +140,8 @@ module Stardust
           connection_type = Class.new(::GraphQL::Types::Relay::BaseConnection) do 
             graphql_name "#{@@__types__[type].graphql_name}Connection"
             edge_type(edge_type)
+
+            field :page_info, page_info_type, null: false, description: "Information to aid in pagination."
             
             field :total_count, Integer, null: false
             def total_count
