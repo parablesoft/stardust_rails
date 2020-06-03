@@ -29,12 +29,16 @@ module Stardust
       end
 
       def argument(name, type, description = nil, loads: nil, **kwargs)
-        actual_type = Collector.lookup_type(type)
-        if loads
-          kwargs[:prepare] = ->(obj, ctx) { loads.find(obj) }
-        end
+        if type.is_a?(String)
+          super(name, type, description, **kwargs)
+        else 
+          actual_type = Collector.lookup_type(type)
+          if loads
+            kwargs[:prepare] = ->(obj, ctx) { loads.find(obj) }
+          end
 
-        super(name, actual_type, description, **kwargs)
+          super(name, actual_type, description, **kwargs)
+        end
       end
 
     end

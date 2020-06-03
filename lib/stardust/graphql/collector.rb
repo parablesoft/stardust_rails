@@ -11,10 +11,10 @@ module Stardust
       FIXED_TYPES = {
         any: ApolloFederation::Any,
         id: ::GraphQL::Types::ID,
-        int: Integer,
-        integer: Integer,
-        float: Float,
-        string: String,
+        int: ::GraphQL::Types::Int,
+        integer: ::GraphQL::Types::Int,
+        float: ::GraphQL::Types::Float,
+        string: ::GraphQL::Types::String,
         date: ::GraphQL::Types::ISO8601DateTime,
         datetime: ::GraphQL::Types::ISO8601DateTime,
         boolean: ::GraphQL::Types::Boolean,
@@ -105,13 +105,41 @@ module Stardust
           is_a_array = true
         end
 
+        # look to see if it is a connection 
+        # https://graphql.org/learn/pagination/#connection-specification
+        if is_a_array
+          is_a_connection = rest.reduce(false) do |accu, element|
+            accu || (
+              element.is_a?(Hash) && 
+              element[:connection] 
+            )
+          end
+          rest
+        end
+
         raise MissingType, type.to_s unless @@__types__[type]
 
         @@__lookedup_types__ << type
         @@__lookedup_types__ = @@__lookedup_types__.uniq
 
 
-        if is_a_array
+        if is_a_connection
+          edge_type = Class.new(::GraphQL::Types::Relay::BaseEdge) do 
+            graphql_name "#{@@__types__[type].graphql_name}Edge"
+            node_type(@@__types__[type])
+          end
+
+          connection_type = Class.new(::GraphQL::Types::Relay::BaseConnection) do 
+            graphql_name "#{@@__types__[type].graphql_name}Connection"
+            edge_type(edge_type)
+            
+            field :total_count, Integer, null: false
+            def total_count
+              object.send(:relation_count, object.nodes)
+            end
+          end
+
+        elsif is_a_array
           [@@__types__[type]] + rest
         else
           @@__types__[type]
