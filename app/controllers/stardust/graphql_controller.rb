@@ -12,6 +12,7 @@ module Stardust
           operation_name: operation_name
         )
       end
+
       render json: ApolloFederation::Tracing.attach_trace_to_result(result)
 
 
@@ -50,7 +51,11 @@ module Stardust
 
     def around_execute(&block)
       around_execute = Stardust.configuration.graphql.around_execute
-      around_execute.call(request,&block)
+      if around_execute
+        around_execute.call(request,&block)
+      else
+        block.()
+      end
     end
 
     # Handle form data, JSON body, or a blank value
@@ -76,12 +81,12 @@ module Stardust
       logger.error e.backtrace.join("\n")
 
       render json: {
-               error: {
-                 message: e.message,
-                 backtrace: e.backtrace
-               },
-               data: {}
-             }, status: 500
+        error: {
+          message: e.message,
+          backtrace: e.backtrace
+        },
+        data: {}
+      }, status: 500
 
     end
   end
