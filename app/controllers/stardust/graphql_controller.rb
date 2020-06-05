@@ -48,9 +48,9 @@ module Stardust
       setup_context ? setup_context.(request) : {}
     end
 
-    def around_execute
+    def around_execute(&block)
       around_execute = Stardust.configuration.graphql.around_execute
-      yield around_execute
+      around_execute.call(request,&block)
     end
 
     # Handle form data, JSON body, or a blank value
