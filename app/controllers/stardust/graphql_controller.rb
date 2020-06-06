@@ -54,7 +54,7 @@ module Stardust
       if around_execute
         around_execute.call(request,&block)
       else
-        block.()
+        yield
       end
     end
 
