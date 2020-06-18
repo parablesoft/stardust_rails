@@ -5,6 +5,9 @@ module Stardust
       def self.included(base)
         base.module_eval do
           include ::GraphQL::Schema::Interface
+          include ApolloFederation::Interface
+
+          field_class Field
 
           def self.graphql_name(name = nil)
             if name
