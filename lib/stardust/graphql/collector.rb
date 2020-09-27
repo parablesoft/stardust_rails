@@ -130,6 +130,11 @@ module Stardust
 
 
         if is_a_connection
+          # We first need to check if we already created the anonymous conection type derived from the base type
+           
+          connection_type_name = "#{type.to_s}_connection".to_sym
+          return @@__types__[connection_type_name] if @@__types__[connection_type_name]
+          
 
           page_info_type = stardust_page_info_type
           edge_type = Class.new(::GraphQL::Types::Relay::BaseEdge) do 
@@ -137,7 +142,7 @@ module Stardust
             node_type(@@__types__[type])
           end
 
-          connection_type = Class.new(::GraphQL::Types::Relay::BaseConnection) do 
+          @@__types__[connection_type_name] = Class.new(::GraphQL::Types::Relay::BaseConnection) do 
             graphql_name "#{@@__types__[type].graphql_name}Connection"
             edge_type(edge_type)
 
